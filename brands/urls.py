@@ -13,18 +13,24 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 
+from rest_framework import renderers
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework.routers import DefaultRouter
 
-from brands import views
+from brands.views import InfoViewSet, UserViewSet, api_root
+
+
+# Create a router and register our viewsets with it.
+# It automatically creates the API root view for us and the API URLs
+router = DefaultRouter()
+router.register(r'info', views.InfoViewSet)
+router.register(r'users', views.UserViewSet)
+
 
 urlpatterns = [
-    url(r'^$', views.InfoList.as_view()),
-    url(r'^(?P<pk>[0-9]+)/$', views.InfoDetail.as_view()),
-    url(r'^users/$', views.UserList.as_view()),
-    url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
-    url(r'^root/$', views.api_root),
+    url(r'^', include(router.urls)),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
